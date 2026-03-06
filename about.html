@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — MyOtherMe</title>
+<meta name="description" content="The story behind MyOtherMe — a creative experiment by Ruben Cespedes.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%23C8A96E'/><text x='16' y='22' text-anchor='middle' font-size='20' font-family='serif' font-weight='bold' fill='%230A0A0F'>M</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:rgba(200,169,110,.25);color:#E8E4DC}
+
+:root{
+  --bg:#0A0A0F;--surface:#11111A;--gold:#C8A96E;
+  --body:#E8E4DC;--muted:#858599;--border:#2A2A3A;
+}
+
+body{background:var(--bg);color:var(--body);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 24px}
+
+.header{text-align:center;margin-bottom:48px}
+.title{color:var(--gold);font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(36px,8vw,52px);margin-bottom:10px}
+.title a{color:inherit;text-decoration:none}
+.tagline{color:var(--muted);font-size:13px;letter-spacing:.15em;text-transform:uppercase}
+
+.card{width:100%;max-width:520px;background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow:hidden}
+.gold-line{height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent)}
+.card-body{padding:40px 32px;display:flex;flex-direction:column;gap:28px}
+
+.section-label{color:var(--muted);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+
+.about-text{color:var(--body);font-size:15px;line-height:1.85;opacity:.88}
+.about-text a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(200,169,110,.3);transition:border-color .2s}
+.about-text a:hover{border-color:var(--gold)}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;letter-spacing:.04em;text-decoration:none;transition:color .2s;margin-top:40px}
+.back-link:hover{color:var(--gold)}
+.back-link svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+
+.footer{margin-top:56px}
+.footer-text{color:#7A7A8E;font-size:11px;letter-spacing:.04em}
+.footer-sep{color:#3A3A4A;margin:0 2px}
+.footer-link{color:#7A7A8E;text-decoration:none;transition:color .2s}
+.footer-link:hover{color:var(--gold)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1 class="title"><a href="index.html">My<span style="color:#E8E4DC">Other</span>Me</a></h1>
+  <p class="tagline">About this project</p>
+</div>
+
+<div class="card">
+  <div class="gold-line"></div>
+  <div class="card-body">
+    <p class="section-label">The Story Behind It</p>
+
+    <p class="about-text">
+      MyOtherMe started as a simple "what if." We all have moments where we wonder what our lives would look like if we had made different choices — moved to a different city, picked a different career, said yes when we said no.
+    </p>
+
+    <p class="about-text">
+      This project takes that curiosity and turns it into something you can actually see. Type your name and what you do, and you will get a glimpse into a parallel life — one that is entirely fictional but strangely personal. A different city, a different career, a different story. Same you.
+    </p>
+
+    <p class="about-text">
+      It was built purely for fun as a creative experiment. No data is collected, no accounts are needed, and everything runs right in your browser. Nothing is stored, nothing is tracked. Just a moment of imagination.
+    </p>
+
+    <p class="about-text">
+      Created by <a href="https://instagram.com/uiuxcreative" target="_blank" rel="noopener">Ruben Cespedes</a> — a designer who loves building things that make people feel something, even if just for a few seconds.
+    </p>
+  </div>
+</div>
+
+<a href="index.html" class="back-link">
+  <svg viewBox="0 0 14 14"><polyline points="8 2 3 7 8 12"/></svg>
+  Back to MyOtherMe
+</a>
+
+<footer class="footer"><p class="footer-text">myotherme.app <span class="footer-sep">|</span> <a href="about.html" class="footer-link">About</a> <span class="footer-sep">|</span> <a href="terms.html" class="footer-link">Terms</a></p></footer>
+
+</body>
+</html>

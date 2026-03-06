@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyOtherMe — Who else could you be?</title>
+<meta name="description" content="Discover your parallel life. Type your name and what you do. See who you could have been.">
+<meta property="og:title" content="MyOtherMe — Who else could you be?">
+<meta property="og:description" content="Discover your parallel life. Type your name and what you do. See who you could have been.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://myotherme.app">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%23C8A96E'/><text x='16' y='22' text-anchor='middle' font-size='20' font-family='serif' font-weight='bold' fill='%230A0A0F'>M</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:rgba(200,169,110,.25);color:#E8E4DC}
+
+:root{
+  --bg:#0A0A0F;--surface:#11111A;--gold:#C8A96E;
+  --body:#E8E4DC;--muted:#858599;--border:#2A2A3A;
+}
+
+body{background:var(--bg);color:var(--body);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 24px}
+
+/* Header */
+.header{text-align:center;margin-bottom:48px}
+.title{color:var(--gold);font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(36px,8vw,52px);margin-bottom:10px}
+.tagline{color:var(--muted);font-size:13px;letter-spacing:.15em;text-transform:uppercase}
+
+/* Card shell */
+.card{width:100%;max-width:420px;background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow:hidden;position:relative}
+.gold-line{height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent)}
+.card-body{padding:32px;display:flex;flex-direction:column;gap:24px}
+
+/* Form */
+.field{display:flex;flex-direction:column;gap:8px}
+.label{color:var(--muted);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;color:var(--body);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border .2s,box-shadow .2s}
+.input::placeholder{color:#606075}
+.input:focus{border-color:rgba(200,169,110,.4);box-shadow:0 0 0 3px rgba(200,169,110,.1)}
+
+.btn{width:100%;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);color:var(--gold);font-family:'DM Sans',sans-serif;font-size:14px;letter-spacing:.04em;border-radius:8px;padding:14px;cursor:pointer;transition:background .2s,border .2s}
+.btn:hover{background:rgba(200,169,110,.2);border-color:rgba(200,169,110,.5)}
+
+.error-msg{color:#e57373;font-size:13px;text-align:center;display:none}
+
+/* Loading */
+.loading{display:none;flex-direction:column;align-items:center;gap:20px;padding:40px 0}
+.dots{display:flex;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulse 1.4s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:.2s}
+.dot:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+.loading-msg{color:var(--muted);font-size:13px;letter-spacing:.04em}
+
+/* Result */
+.result{display:none;animation:fadeUp .6s ease-out}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-header{text-align:center}
+.result-label{color:var(--muted);font-size:11px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px}
+.result-name{color:var(--gold);font-family:'Playfair Display',serif;font-style:italic;font-size:24px}
+.story{font-family:'DM Sans',sans-serif;color:var(--body);font-size:16px;line-height:1.8}
+.drop-cap{float:left;font-size:48px;line-height:.85;margin-right:8px;margin-top:2px;color:var(--gold);font-family:'Playfair Display',serif;font-style:italic}
+.btn-row{display:flex;gap:12px;padding-top:4px}
+.btn-secondary{flex:1;background:var(--bg);border:1px solid var(--border);color:rgba(232,228,220,.78);font-family:'DM Sans',sans-serif;font-size:13px;letter-spacing:.04em;border-radius:8px;padding:12px;cursor:pointer;transition:all .2s}
+.btn-secondary:hover{border-color:var(--muted);color:#E8E4DC}
+.btn-share{flex:1;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);color:var(--gold);font-family:'DM Sans',sans-serif;font-size:13px;letter-spacing:.04em;border-radius:8px;padding:12px;cursor:pointer;transition:all .2s}
+.btn-share:hover{background:rgba(200,169,110,.2);border-color:rgba(200,169,110,.5)}
+
+/* Toast */
+.toast{position:fixed;bottom:32px;left:50%;transform:translate(-50%,20px);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 20px;opacity:0;transition:all .3s ease;pointer-events:none;z-index:50}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast p{color:var(--gold);font-size:13px;letter-spacing:.04em}
+
+/* Footer */
+.footer{margin-top:56px}
+.footer-text{color:#7A7A8E;font-size:11px;letter-spacing:.04em}
+.footer-sep{color:#3A3A4A;margin:0 2px}
+.footer-link{color:#7A7A8E;text-decoration:none;transition:color .2s}
+.footer-link:hover{color:var(--gold)}
+
+/* Share image card (hidden, rendered offscreen for html2canvas) */
+.share-canvas-wrap{position:fixed;left:-9999px;top:0;z-index:-1}
+.share-card{width:1080px;height:1920px;background:#0A0A0F;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 80px;font-family:'DM Sans',sans-serif;box-sizing:border-box}
+.share-card .sc-main{display:flex;flex-direction:column;align-items:center;width:100%}
+.share-card .sc-logo{color:#C8A96E;font-family:'Playfair Display',serif;font-style:italic;font-size:64px;margin-bottom:8px}
+.share-card .sc-tagline{color:#858599;font-size:22px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:72px}
+.share-card .sc-inner{width:100%;background:#11111A;border-radius:24px;border:2px solid #2A2A3A;overflow:hidden;flex-shrink:0}
+.share-card .sc-gold-line{height:4px;background:linear-gradient(to right,transparent,#C8A96E,transparent)}
+.share-card .sc-body{padding:64px;display:flex;flex-direction:column;gap:40px}
+.share-card .sc-label{color:#858599;font-size:20px;letter-spacing:.2em;text-transform:uppercase;text-align:center}
+.share-card .sc-name{color:#C8A96E;font-family:'Playfair Display',serif;font-style:italic;font-size:52px;text-align:center;margin-top:8px}
+.share-card .sc-story{color:#E8E4DC;font-size:32px;line-height:1.7}
+.share-card .sc-drop{float:left;font-size:96px;line-height:.8;margin-right:14px;margin-top:6px;color:#C8A96E;font-family:'Playfair Display',serif;font-style:italic}
+.share-card .sc-footer{padding-top:56px;text-align:center;width:100%;display:flex;flex-direction:column;align-items:center}
+.share-card .sc-divider{width:120px;height:2px;background:linear-gradient(to right,transparent,#C8A96E,transparent);margin:0 auto 32px}
+.share-card .sc-credit{color:#858599;font-size:20px;line-height:1.6}
+.share-card .sc-try{color:#858599;font-size:18px;margin-top:24px}
+.share-card .sc-pill{display:inline-block;margin-top:10px;padding:10px 28px;border:1.5px solid rgba(200,169,110,.4);border-radius:40px;color:#C8A96E;font-size:22px;font-weight:500;letter-spacing:.04em}
+
+/* Share button row update */
+.btn-row-3{display:flex;gap:12px;padding-top:4px}
+.btn-download{flex:1;background:rgba(200,169,110,.18);border:1px solid rgba(200,169,110,.4);color:var(--gold);font-family:'DM Sans',sans-serif;font-size:13px;letter-spacing:.04em;border-radius:8px;padding:12px;cursor:pointer;transition:all .2s}
+.btn-download:hover{background:rgba(200,169,110,.3);border-color:rgba(200,169,110,.6)}
+
+/* Generating spinner on share button */
+.btn-share.generating,.btn-download.generating{pointer-events:none;opacity:.6}
+
+/* Close button */
+.close-btn{position:absolute;top:16px;right:16px;width:32px;height:32px;border:none;background:rgba(255,255,255,.06);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:2}
+.close-btn:hover{background:rgba(255,255,255,.12)}
+.close-btn svg{width:14px;height:14px;stroke:var(--muted);stroke-width:2;stroke-linecap:round}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1 class="title">My<span style="color:#E8E4DC">Other</span>Me</h1>
+  <p class="tagline">Who else could you be?</p>
+</div>
+
+<!-- INPUT STATE -->
+<div class="card" id="inputCard">
+  <div class="gold-line"></div>
+  <div class="card-body">
+    <div class="field">
+      <label class="label">Your Name</label>
+      <input class="input" id="nameInput" type="text" placeholder="First name is enough" autocomplete="off">
+    </div>
+    <div class="field">
+      <label class="label">What Do You Do?</label>
+      <input class="input" id="jobInput" type="text" placeholder="Lawyer, teacher, student, parent..." autocomplete="off">
+    </div>
+    <p class="error-msg" id="errorMsg">Tell me your name and what you do first.</p>
+    <button class="btn" id="submitBtn">Find my other life</button>
+  </div>
+</div>
+
+<!-- LOADING STATE -->
+<div class="loading" id="loadingState">
+  <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  <p class="loading-msg" id="loadingMsg">Searching your other life...</p>
+</div>
+
+<!-- RESULT STATE -->
+<div class="card result" id="resultCard">
+  <div class="gold-line"></div>
+  <button class="close-btn" id="closeBtn" aria-label="Close"><svg viewBox="0 0 14 14"><line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/></svg></button>
+  <div class="card-body">
+    <div class="result-header">
+      <p class="result-label">Your other life</p>
+      <h2 class="result-name" id="resultName"></h2>
+    </div>
+    <div class="story" id="storyText"></div>
+    <div class="btn-row">
+      <button class="btn-secondary" id="tryAgainBtn">Try again</button>
+      <button class="btn-share" id="copyBtn">Copy text</button>
+      <button class="btn-download" id="shareBtn">Share image</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden card rendered at IG Stories resolution for html2canvas -->
+<div class="share-canvas-wrap" id="shareCanvasWrap">
+  <div class="share-card" id="shareCard">
+    <div class="sc-main">
+      <div class="sc-logo">My<span style="color:#E8E4DC">Other</span>Me</div>
+      <div class="sc-tagline">Who else could you be?</div>
+      <div class="sc-inner">
+        <div class="sc-gold-line"></div>
+        <div class="sc-body">
+          <div>
+            <p class="sc-label">Your other life</p>
+            <h2 class="sc-name" id="scName"></h2>
+          </div>
+          <div class="sc-story" id="scStory"></div>
+        </div>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-divider"></div>
+        <p class="sc-credit">Created by Ruben Cespedes | @uiuxcreative</p>
+        <p class="sc-try">Try it at:</p>
+        <span class="sc-pill">myotherme.app</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer"><p class="footer-text">myotherme.app <span class="footer-sep">|</span> <a href="about.html" class="footer-link">About</a> <span class="footer-sep">|</span> <a href="terms.html" class="footer-link">Terms</a></p></footer>
+
+<div class="toast" id="toast"><p id="toastMsg">Copied to clipboard</p></div>
+
+<script>
+// ─── Life Snapshot Story Engine ─────────────────────────────────
+// Generates a vivid, personal alternate life: career, city, family,
+// hobbies, daily joys, and one emotional detail that sticks.
+
+const cities = [
+  "Lisbon, Portugal","Kyoto, Japan","Medellín, Colombia","Cape Town, South Africa",
+  "Reykjavík, Iceland","Marrakech, Morocco","Buenos Aires, Argentina","Chiang Mai, Thailand",
+  "Dubrovnik, Croatia","Melbourne, Australia","Havana, Cuba","Bergen, Norway",
+  "Oaxaca, Mexico","Jaipur, India","Edinburgh, Scotland","Cartagena, Colombia",
+  "Prague, Czech Republic","Hội An, Vietnam","Seville, Spain","Tbilisi, Georgia",
+  "Montevideo, Uruguay","Porto, Portugal","Salzburg, Austria","Bologna, Italy",
+  "Queenstown, New Zealand","Galway, Ireland","Vancouver, Canada","Cusco, Peru",
+  "Zanzibar, Tanzania","Bruges, Belgium","Copenhagen, Denmark","San Sebastián, Spain",
+  "Mendoza, Argentina","Split, Croatia","Tromsø, Norway","Luang Prabang, Laos",
+  "Amalfi, Italy","Córdoba, Argentina","Sintra, Portugal","Nara, Japan",
+  "Austin, Texas","Amsterdam, Netherlands","Nairobi, Kenya","Beirut, Lebanon",
+  "Seoul, South Korea","Montréal, Canada","Tulum, Mexico","Florence, Italy",
+  "Tallinn, Estonia","Valparaíso, Chile"
+];
+
+const careers = [
+  "a surf instructor who runs morning lessons on the beach",
+  "a wildlife photographer whose work hangs in a downtown gallery",
+  "a pastry chef who owns a tiny bakery that opens at 5 AM",
+  "a marine biologist studying coral reefs off the coast",
+  "a children's book illustrator who works from a sunlit home studio",
+  "an architect designing eco-friendly homes for young families",
+  "a jazz musician who plays saxophone at a speakeasy every Friday night",
+  "a sommelier who runs wine tastings at a vineyard on the hillside",
+  "a documentary filmmaker telling stories about local artisans",
+  "a yoga instructor with a small studio overlooking the water",
+  "a tattoo artist whose shop is famous for custom botanical designs",
+  "a software developer who built an app that connects neighbors",
+  "a flight instructor who teaches people to fly small planes on weekends",
+  "a restaurateur whose farm-to-table place has a three-month waitlist",
+  "a street artist known for massive murals that change every season",
+  "a florist whose shop is the most photographed spot in the neighborhood",
+  "a veterinarian who runs a rescue shelter out of a converted farmhouse",
+  "a travel writer whose columns appear in magazines worldwide",
+  "a furniture maker who builds custom pieces from reclaimed wood",
+  "a DJ who spins vinyl at rooftop parties every Saturday at sunset",
+  "a chocolatier who handcrafts truffles that sell out every weekend",
+  "a scuba diving instructor who leads expeditions through underwater caves",
+  "a ceramic artist whose hand-thrown mugs are in every café in town",
+  "a personal trainer who coaches athletes and hosts free community bootcamps",
+  "a boutique hotel owner with twelve rooms and the best breakfast in the city",
+  "a brewmaster who makes small-batch craft beer in a garage-turned-brewery",
+  "a pilot who flies charter planes between islands",
+  "a podcast host whose show about reinvention has half a million listeners",
+  "a dance teacher who runs salsa nights that pack the plaza every week",
+  "a bookstore owner whose shop has a secret reading room in the back"
+];
+
+const families = [
+  "married to a painter, with twin daughters who are already more adventurous than both parents combined",
+  "raising a curious six-year-old son who asks questions no adult can answer, and loving every second of it",
+  "married to their college sweetheart, with a baby girl and a golden retriever named Mango",
+  "with a partner who runs the café next door — they met when one of them ordered the wrong coffee",
+  "happily single and thriving, with a tight circle of friends who feel more like family than family ever did",
+  "living with their best friend from childhood, two rescue dogs, and a cat that owns the entire apartment",
+  "married to a musician, with three kids who turn every dinner into a loud, beautiful chaos",
+  "engaged to someone they met while traveling — the wedding is planned for next spring on the beach",
+  "co-parenting a wildly creative eight-year-old daughter who already has bigger dreams than most adults",
+  "in a relationship with a chef who insists on cooking every meal, which is honestly the best part of the deal",
+  "raising two teenage boys who drive them crazy and make them laugh harder than anyone else on earth",
+  "living with a partner who teaches at the local school — their apartment is always full of books and laughter",
+  "married to an entrepreneur, with a toddler son who has already figured out how to unlock every door in the house",
+  "with a partner who is a photographer — their apartment walls are covered in memories from every trip they have taken together",
+  "newly married, no kids yet, spending every weekend exploring a new corner of the city like tourists in their own life",
+  "sharing a house with two close friends, splitting groceries and trading home-cooked meals like a modern family sitcom",
+  "living with their high school sweetheart and a lazy bulldog who snores louder than any alarm clock",
+  "married to a nurse, with a ten-year-old daughter who wants to be an astronaut and a seven-year-old son who wants to be a dinosaur",
+  "raising a five-year-old adopted son who brings a drawing home from school every single day, and every single one goes on the fridge",
+  "in a long-distance relationship that works because they both love their independence — and their reunions are always electric"
+];
+
+const hobbies = [
+  "spends free time restoring a vintage motorcycle in the garage and surfing whenever the waves are right",
+  "loves cooking elaborate Sunday dinners for friends, hiking mountain trails, and collecting vinyl records",
+  "plays pickup basketball every Thursday, binge-watches sci-fi shows, and is learning to make pottery",
+  "runs along the waterfront every morning, hosts game nights on Fridays, and reads two books a week",
+  "plays guitar around a bonfire on weekends, volunteers at the animal shelter, and grows tomatoes on the balcony",
+  "paints watercolors on Sunday mornings, does kickboxing twice a week, and is slowly learning Italian",
+  "is obsessed with rock climbing, makes their own hot sauce, and stays up late building LEGO sets with zero shame",
+  "goes on long bike rides through the countryside, writes in a leather journal every night, and throws the best dinner parties",
+  "plays in a recreational soccer league, watches old movies every Sunday, and is teaching themselves woodworking",
+  "takes long walks with a camera, cooks for the neighbors, and spends rainy afternoons in used bookshops",
+  "swims in the ocean every morning before work, hosts a monthly poetry reading, and is learning to sail",
+  "spends weekends at flea markets hunting for vintage furniture, plays chess in the park, and makes homemade pasta from scratch",
+  "runs a weekend book club that always turns into a dinner party, practices meditation at sunrise, and collects rare teas",
+  "does trail running, builds model airplanes, and hosts movie marathons where everyone votes on the theme",
+  "goes fishing at dawn, plays piano in the living room every evening, and coaches their kid's little league team",
+  "dances tango on Tuesday nights, cooks a new recipe from a different country every week, and journals religiously",
+  "plays tennis every morning, collects rare sneakers, and spends every vacation exploring street food in a new city",
+  "practices photography on long walks, brews their own beer on weekends, and never misses a live concert",
+  "takes ceramics classes, does long road trips with no plan, and always has a jigsaw puzzle half-finished on the dining table",
+  "gardens obsessively, plays cards with the neighbors on Friday nights, and has a secret talent for karaoke"
+];
+
+const closers = [
+  "It is not the life anyone predicted, but it is the one that fits perfectly.",
+  "Some mornings, standing in the kitchen before anyone else wakes up, it hits — this is exactly where they are supposed to be.",
+  "They do not have everything figured out, but they wake up every morning actually excited to see what happens next.",
+  "It is a life built on small, deliberate choices, and not a single one of them feels like a compromise.",
+  "Friends from their old life sometimes ask how they ended up here, and the honest answer is: by finally listening to themselves.",
+  "The money is not extraordinary. The life is.",
+  "They never planned any of this. That is exactly why it works.",
+  "If you asked them to trade it for anything, they would laugh — not out of arrogance, but because the question does not make sense anymore.",
+  "Every evening, as the sun drops below the skyline, they have the same quiet thought: I would choose this again.",
+  "It is messy, it is imperfect, and it is entirely theirs.",
+  "They built this life the way you build anything worth keeping — slowly, stubbornly, and with their whole heart.",
+  "People keep asking when they will settle down, not realizing this is what settling down looks like when you do it on your own terms.",
+  "There is no five-year plan. There is just tomorrow, and it looks really, really good from here.",
+  "It is the kind of life that does not photograph well but feels extraordinary to live.",
+  "They did not find this life by searching. They found it by finally stopping."
+];
+
+// ─── Random Engine ───────────────────────────────────────────────
+function hash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+// Seeded PRNG (mulberry32) for reproducible-per-call but unique-per-click
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = t + Math.imul(t ^ (t >>> 7), 61 | t) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+let generationCount = 0;
+
+function pick(arr, rng) {
+  return arr[Math.floor(rng() * arr.length)];
+}
+
+function generateStory(name, job) {
+  const salt = generationCount++ + Date.now();
+  const seed = hash(name.toLowerCase() + job.toLowerCase() + String(salt));
+  const rng = mulberry32(seed);
+
+  const n       = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  const city    = pick(cities, rng);
+  const career  = pick(careers, rng);
+  const family  = pick(families, rng);
+  const hobby   = pick(hobbies, rng);
+  const closer  = pick(closers, rng);
+
+  return `In this life, ${n} is ${career} in ${city}. ${n} is ${family}. ${n} ${hobby}. ${closer}`;
+}
+
+// ─── UI Logic ────────────────────────────────────────────────────
+const inputCard    = document.getElementById('inputCard');
+const loadingState = document.getElementById('loadingState');
+const resultCard   = document.getElementById('resultCard');
+const nameInput    = document.getElementById('nameInput');
+const jobInput     = document.getElementById('jobInput');
+const errorMsg     = document.getElementById('errorMsg');
+const submitBtn    = document.getElementById('submitBtn');
+const resultName   = document.getElementById('resultName');
+const storyText    = document.getElementById('storyText');
+const tryAgainBtn  = document.getElementById('tryAgainBtn');
+const copyBtn      = document.getElementById('copyBtn');
+const shareBtn     = document.getElementById('shareBtn');
+const closeBtn     = document.getElementById('closeBtn');
+const toast        = document.getElementById('toast');
+const loadingMsg   = document.getElementById('loadingMsg');
+const scName       = document.getElementById('scName');
+const scStory      = document.getElementById('scStory');
+const shareCard    = document.getElementById('shareCard');
+
+const loadingMessages = [
+  'Searching your other life...',
+  'Opening another world...',
+  'Finding who you almost were...',
+  'Writing your parallel story...'
+];
+
+function showState(state) {
+  inputCard.style.display    = state === 'input'   ? 'block' : 'none';
+  loadingState.style.display = state === 'loading'  ? 'flex'  : 'none';
+  resultCard.style.display   = state === 'result'   ? 'block' : 'none';
+}
+
+const toastMsg = document.getElementById('toastMsg');
+function showToast(msg) {
+  toastMsg.textContent = msg || 'Copied to clipboard';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+submitBtn.addEventListener('click', handleSubmit);
+nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleSubmit(); });
+jobInput.addEventListener('keydown',  e => { if (e.key === 'Enter') handleSubmit(); });
+
+function handleSubmit() {
+  const name = nameInput.value.trim();
+  const job  = jobInput.value.trim();
+
+  if (!name || !job) {
+    errorMsg.style.display = 'block';
+    return;
+  }
+  errorMsg.style.display = 'none';
+
+  // Show loading
+  showState('loading');
+  let msgIdx = 0;
+  loadingMsg.textContent = loadingMessages[0];
+  const msgInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadingMessages.length;
+    loadingMsg.textContent = loadingMessages[msgIdx];
+  }, 1800);
+
+  // Simulate a brief generation delay (feels more intentional)
+  const delay = 1800 + Math.random() * 1200;
+  setTimeout(() => {
+    clearInterval(msgInterval);
+
+    const story = generateStory(name, job);
+    const displayName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
+    resultName.textContent = displayName;
+    storyText.innerHTML = '<span class="drop-cap">' + story.charAt(0) + '</span>' + story.slice(1);
+
+    showState('result');
+  }, delay);
+}
+
+tryAgainBtn.addEventListener('click', () => {
+  showState('input');
+  nameInput.focus();
+});
+
+closeBtn.addEventListener('click', () => {
+  showState('input');
+  nameInput.focus();
+});
+
+// Copy text to clipboard
+copyBtn.addEventListener('click', () => {
+  const story = storyText.textContent;
+  const text = story + '\n\nmyotherme.app';
+  navigator.clipboard.writeText(text).then(showToast).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast();
+  });
+});
+
+// Detect mobile (touch device with small screen)
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+// Generate shareable IG Stories image
+shareBtn.addEventListener('click', async () => {
+  shareBtn.classList.add('generating');
+  shareBtn.textContent = 'Generating...';
+
+  // Populate the hidden share card
+  const displayName = resultName.textContent;
+  const story = storyText.textContent;
+  scName.textContent = displayName;
+  scStory.innerHTML = '<span class="sc-drop">' + story.charAt(0) + '</span>' + story.slice(1);
+
+  // Small delay to let fonts render in the offscreen card
+  await new Promise(r => setTimeout(r, 300));
+
+  try {
+    const canvas = await html2canvas(shareCard, {
+      width: 1080,
+      height: 1920,
+      scale: 1,
+      backgroundColor: '#0A0A0F',
+      useCORS: true,
+      logging: false,
+    });
+
+    // Convert to blob
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    const file = new File([blob], 'my-other-life.png', { type: 'image/png' });
+
+    // Mobile: use native share sheet (IG Stories, WhatsApp, etc.)
+    // Desktop: always download directly
+    if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: 'My Other Life — MyOtherMe',
+        text: 'Discover your parallel life at myotherme.app',
+      });
+    } else {
+      // Download the image
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'my-other-life.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Image saved — share it!');
+    }
+  } catch (err) {
+    // User cancelled share or error — fail silently
+    if (err.name !== 'AbortError') console.error('Share error:', err);
+  }
+
+  shareBtn.classList.remove('generating');
+  shareBtn.textContent = 'Share image';
+});
+</script>
+</body>
+</html>
